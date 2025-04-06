@@ -1,5 +1,7 @@
 #include <stdlib.h>
 #include <stdio.h>
+#include <unistd.h>
+#include <sys/wait.h>
 #include "utils.h"
 #include "rsa.h"
 
@@ -20,6 +22,47 @@ void exercise1 (void)
 void exercise2 (void)
 {
     int n, e, d;
+    gen_key(&n, &e, &d);
+    
+    int pipefd[2];
+    if (pipe(pipefd) == -1) {
+        perror("pipe");
+        exit(EXIT_FAILURE);
+    }
+    
+    pid_t pid = fork();
+    if (pid == -1) {
+        perror("fork");
+        exit(EXIT_FAILURE);
+    }
+    
+    if (pid > 0) { // Parent process (sender)
+        close(pipefd[0]); // Close read end
+        
+        int secret_message;
+        printf("Enter message: ");
+        scanf("%d", &secret_message);
+        
+        int encrypted_message = encrypt(secret_message, e, n);
+        write(pipefd[1], &encrypted_message, sizeof(encrypted_message));
+        close(pipefd[1]);
+        
+        wait(NULL); // Wait for child
+    } else { // Child process (receiver)
+        close(pipefd[1]); // Close write end
+        
+        int encrypted_message;
+        read(pipefd[0], &encrypted_message, sizeof(encrypted_message));
+        close(pipefd[0]);
+        
+        int decrypted_message = decrypt(encrypted_message, d, n);
+        printf("Encrypted message received: %d\n", encrypted_message);
+        printf("Decrypted message: %d\n", decrypted_message);
+        
+        exit(0);
+    }
+    /*
+    int n, e, d;
     gen_key (&n, &e, &d);
     int secret_message = 0;
     printf ("Enter message: ");
@@ -28,6 +71,7 @@ void exercise2 (void)
     printf ("Encrypted message: %d\n", encrypted_message);
     int decrypted_message = decrypt (secret_message, e, n);
     printf ("Decrypted message: %d\n", decrypted_message);
+    */
 }
 
 int main (void)
