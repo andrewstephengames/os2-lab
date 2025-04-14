@@ -1,0 +1,11 @@
+Disease,Parameter,Emergency,Warning,Normal,BelowNormal
+Asthma,Humidity,>90,70-90,30-70,<30
+Asthma,Temperature,>35,30-35,18-30,<18
+Hypertension,Noise level,>90,70-90,40-70,<40
+Migraine,Illumination,>800,600-800,300-600,<300
+Flu,Temperature,<15,15-18,18-22,>22
+Arthritis,Humidity,<20,20-30,30-60,>60
+SkinAllergy,Illumination,>1000,800-1000,400-800,<400
+Insomnia,Noise level,>80,60-80,30-60,<30
+Cold,Temperature,<10,10-15,15-20,>20
+Heatstroke,Temperature,>40,35-40,25-35,<25
